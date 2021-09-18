@@ -1,0 +1,65 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #39004d;
+  color: white;
+  }
+
+.flex{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+
+.timer-container{
+  margin: 15px;
+  }
+
+.buttons button{
+  padding: 10px;
+  font-size: 16px;
+}
+
+.buttons span {
+  font-size: 30px;
+  padding: 10px;
+}
+
+.display {
+ text-align: center;
+ border: solid tomato;
+ border-radius: 50%;
+ background-color: tomato;
+}
+
+.display button {
+  padding: 5px;
+  margin: 5px;
+}
+
+.display span {
+  font-size: 56px;
+}
+
+.display h1 {
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+.leaf {
+  border: solid #35b156;
+  background: #35b156;
+  border-radius: 50%;
+  width: 100px;
+  left: px;
+  margin: auto;
+  position: relative;
+  color: #35b156;
+}
+
+.leaf2 {
+  bottom: 24px;
+  transform: rotate(90deg);
+  width: 60px;
+}

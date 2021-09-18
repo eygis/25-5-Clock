@@ -1,0 +1,222 @@
+//const audio = document.getElementById("beep");
+
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.interval = undefined;
+  }
+
+  state = {
+    restCount: 5,
+    workCount: 25,
+    minuteCount: 25 * 60,
+    currentSessionType: "Work Session",
+    isActive: false
+  };
+
+  handleStartPause = () => {
+    const { isActive } = this.state;
+
+    if (isActive) {
+      clearInterval(this.interval);
+      this.setState({
+        isActive: false
+      });
+    } else {
+      this.setState({
+        isActive: true
+      });
+      this.interval = setInterval(() => {
+        const {
+          minuteCount,
+          currentSessionType,
+          restCount,
+          workCount
+        } = this.state;
+
+        if (minuteCount === 0) {
+          this.audioBeep.play();
+          this.setState({
+            currentSessionType:
+              currentSessionType === "Work Session"
+                ? "Rest Session"
+                : "Work Session",
+            minuteCount:
+              currentSessionType === "Work Session"
+                ? restCount * 60
+                : workCount * 60
+          });
+
+        //  audio.play();
+        } else {
+          this.setState({
+            minuteCount: minuteCount - 1
+          });
+        }
+      }, 1000);
+    }
+  };
+
+  handleReset = () => {
+    this.setState({
+      restCount: 5,
+      workCount: 25,
+      minuteCount: 25 * 60,
+      currentSessionType: "Work Session",
+      isActive: false
+    });
+    clearInterval(this.interval);
+    this.audioBeep.pause();
+    this.audioBeep.currentTime = 0;
+  };
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  secondsToMinutes = (count) => {
+    
+    let minutes = Math.floor(count / 60);
+    let seconds = count % 60;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+        
+    return `${minutes}:${seconds}`;
+  };
+
+  handleRestDecrease = () => {
+    const { restCount, isActive, currentSessionType } = this.state;
+    if (restCount > 1) {
+      if (!isActive && currentSessionType === "Rest Session") {
+        this.setState({
+          restCount: restCount - 1,
+          minuteCount: (restCount - 1) * 60
+        });
+      } else {
+        this.setState({
+          restCount: restCount - 1
+        });
+      }
+    }
+  };
+
+  handleRestIncrease = () => {
+    const { restCount, isActive, currentSessionType } = this.state;
+    if (restCount < 60) {
+      if (!isActive && currentSessionType === "Rest Session") {
+        this.setState({
+          restCount: restCount + 1,
+          minuteCount: (restCount - 1) * 60
+        });
+      } else {
+        this.setState({
+          restCount: restCount + 1
+        });
+      }
+    }
+  };
+  handleWorkDecrease = () => {
+    const { workCount, isActive, currentSessionType } = this.state;
+    if (workCount > 1) {
+      if (!isActive && currentSessionType === "Work Session") {
+        this.setState({
+          workCount: workCount - 1,
+          minuteCount: (workCount - 1) * 60
+        });
+      } else {
+        this.setState({
+          workCount: workCount - 1
+        });
+      }
+    }
+  };
+  handleWorkIncrease = () => {
+    const { workCount, isActive, currentSessionType } = this.state;
+    if (workCount < 60) {
+      if (!isActive && currentSessionType === "Work Session") {
+        this.setState({
+          workCount: workCount + 1,
+          minuteCount: (workCount + 1) * 60
+        });
+      } else {
+        this.setState({
+          workCount: workCount + 1
+        });
+      }
+    }
+  };
+  render() {
+    const {
+      restCount,
+      workCount,
+      minuteCount,
+      currentSessionType
+    } = this.state;
+
+    const restProps = {
+      title: "Rest Length",
+      count: restCount,
+      handleDecrease: this.handleRestDecrease,
+      handleIncrease: this.handleRestIncrease,
+      id: "break"
+    };
+
+    const workProps = {
+      title: "Work Length",
+      count: workCount,
+      handleDecrease: this.handleWorkDecrease,
+      handleIncrease: this.handleWorkIncrease,
+      id: "session"
+    };
+
+    return (
+      <div>
+        <div className="flex">
+          <SetTimer {...restProps} />
+          <SetTimer {...workProps} />
+        </div>
+
+        <div className="display">
+          <div className="leaf">xxxxxx</div>
+          <div className="leaf leaf2">xxxx</div>
+          <h1 id="timer-label">{currentSessionType}</h1>
+          <span id="time-left">
+            {this.secondsToMinutes(minuteCount)}
+            <audio
+          id="beep"
+          preload="auto"
+          ref={(audio) => {
+            this.audioBeep = audio;
+          }}
+          src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+        />
+          </span>
+          <div className="flex">
+            <button id="start_stop" onClick={this.handleStartPause}>
+              Start/Pause
+            </button>
+            <button id="reset" onClick={this.handleReset}>
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+const SetTimer = (props) => (
+  <div className="timer-container">
+    <h1 id={`${props.id}-label`}>{props.title}</h1>
+    <div className="flex buttons">
+      <button id={`${props.id}-increment`} onClick={props.handleIncrease}>
+        +
+      </button>
+      <span id={`${props.id}-length`}>{props.count}</span>
+      <button id={`${props.id}-decrement`} onClick={props.handleDecrease}>
+        -
+      </button>
+    </div>
+  </div>
+);
+
+ReactDOM.render(<Clock />, document.getElementById("app"));
